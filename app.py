@@ -650,7 +650,12 @@ if choice == "✨ Crear Recuerdo":
         with st.container():
             # Usamos una llave dinámica para poder resetearlo
             uploader_key = f"file_input_{st.session_state.file_uploader_key}"
-            uploaded_files = st.file_uploader("Selecciona tus fotos más felices (máximo 3)", type=["jpg", "png", "jpeg"], accept_multiple_files=True, key=uploader_key)
+            uploaded_files = st.file_uploader("Selecciona tus fotos (puedes elegir hasta 3 archivos a la vez)", type=["jpg", "png", "jpeg"], accept_multiple_files=True, key=uploader_key)
+            
+            if uploaded_files and len(uploaded_files) > 3:
+                st.error("⚠️ Has seleccionado más de 3 fotos. Por favor, selecciona solo tus 3 favoritas para continuar.")
+                uploaded_files = [] # Resetear para forzar selección correcta
+            
             col1, col2 = st.columns([1, 1])
             with col1:
                 guest_name = st.text_input("Tu Nombre o Familia", placeholder="Ejem: Juan y María / Familia Pérez", key="guest_input")
@@ -659,20 +664,14 @@ if choice == "✨ Crear Recuerdo":
             
             if st.button("💝 Crear y Guardar mi Recuerdo"):
                 if uploaded_files and message:
-                    if len(uploaded_files) > 3:
-                        st.warning("Solo se procesarán las primeras 3 fotos. ¡Elige las mejores! ✨")
-                    
                     with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
                         result_path = process_image(uploaded_files, message, guest_name)
                         if result_path:
-                            # Generar PDF individual
                             pdf_path, _ = generate_pdf(single_image=result_path)
-                            
-                            # Guardar en estado para persistencia tras el rerun
                             st.session_state.last_result_path = result_path
                             st.session_state.last_pdf_path = pdf_path
                             st.session_state.show_celebration = True
-                            st.session_state.creation_time = time.time() # Registrar momento de creación
+                            st.session_state.creation_time = time.time()
                             st.rerun()
                 else:
                     st.warning("Por favor, sube al menos una foto y escribe un mensaje para que podamos atesorarlo.")
