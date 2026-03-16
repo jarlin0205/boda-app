@@ -677,31 +677,31 @@ if choice == "✨ Crear Recuerdo":
                 else:
                     st.warning("Por favor, sube al menos una foto y escribe un mensaje para que podamos atesorarlo.")
 
-        # --- MOSTRAR RESULTADOS PERSISTENTES ---
-        if st.session_state.get('last_result_path'):
-            st.success("¡Gracias por compartir este momento con nosotros! 🎉")
-            
-            res_path = st.session_state.last_result_path
-            pdf_p = st.session_state.get('last_pdf_path')
-            
-            if pdf_p and os.path.exists(pdf_p):
-                with open(pdf_p, "rb") as f:
-                    st.download_button(
-                        label="💖 Descargar mi Recuerdo en PDF",
-                        data=f,
-                        file_name="mi_recuerdo_boda.pdf",
-                        mime="application/pdf",
-                        on_click=reset_form # Limpiar al descargar
-                    )
-            
-            if os.path.exists(res_path):
-                st.image(res_path, caption="Así luce tu dedicatoria ✨", use_container_width=True)
-            
-            # Mostrar temporizador visual sutil con guarda de seguridad
-            if st.session_state.get('creation_time'):
-                remaining = int(40 - (time.time() - st.session_state.creation_time))
-                if remaining > 0:
-                    st.caption(f"La pantalla se limpiará automáticamente en {remaining} segundos.")
+    # --- MOSTRAR RESULTADOS PERSISTENTES ---
+    if st.session_state.get('last_result_path'):
+        st.success("¡Gracias por compartir este momento con nosotros! 🎉")
+        
+        res_path = st.session_state.last_result_path
+        pdf_p = st.session_state.get('last_pdf_path')
+        
+        if pdf_p and os.path.exists(pdf_p):
+            with open(pdf_p, "rb") as f:
+                st.download_button(
+                    label="💖 Descargar mi Recuerdo en PDF",
+                    data=f,
+                    file_name="mi_recuerdo_boda.pdf",
+                    mime="application/pdf",
+                    on_click=reset_form # Limpiar al descargar
+                )
+        
+        if os.path.exists(res_path):
+            st.image(res_path, caption="Así luce tu dedicatoria ✨", use_container_width=True)
+        
+        # Mostrar temporizador visual sutil con guarda de seguridad
+        if st.session_state.get('creation_time'):
+            remaining = int(40 - (time.time() - st.session_state.creation_time))
+            if remaining > 0:
+                st.caption(f"La pantalla se limpiará automáticamente en {remaining} segundos.")
 
     show_footer()
 
