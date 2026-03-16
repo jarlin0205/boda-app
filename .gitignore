@@ -1,0 +1,22 @@
+# Streamlit
+.streamlit/
+static/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+venv/
+env/
+
+# App Specific (Importante: no subir fotos de invitados)
+galeria/
+assets/marco_boda_premium*.png
+*.pdf
+
+# System
+network_info.txt
+search_file.py
+.DS_Store
+Thumbs.db
