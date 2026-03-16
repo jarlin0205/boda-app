@@ -648,13 +648,15 @@ if choice == "✨ Crear Recuerdo":
         st.write("Tu presencia hace este día aún más especial. Sube hasta 3 de tus momentos favoritos y deja un mensaje con todo tu amor.")
         
         with st.container():
-            # Usamos una llave dinámica para poder resetearlo
-            uploader_key = f"file_input_{st.session_state.file_uploader_key}"
-            uploaded_files = st.file_uploader("Selecciona tus fotos (puedes elegir hasta 3 archivos a la vez)", type=["jpg", "png", "jpeg"], accept_multiple_files=True, key=uploader_key)
+            st.caption("📷 Sube hasta 3 fotos (una por cada espacio):")
             
-            if uploaded_files and len(uploaded_files) > 3:
-                st.error("⚠️ Has seleccionado más de 3 fotos. Por favor, selecciona solo tus 3 favoritas para continuar.")
-                uploaded_files = [] # Resetear para forzar selección correcta
+            k = st.session_state.file_uploader_key
+            img1 = st.file_uploader("📸 Foto 1 (obligatoria)", type=["jpg", "png", "jpeg"], key=f"foto1_{k}")
+            img2 = st.file_uploader("📸 Foto 2 (opcional)", type=["jpg", "png", "jpeg"], key=f"foto2_{k}")
+            img3 = st.file_uploader("📸 Foto 3 (opcional)", type=["jpg", "png", "jpeg"], key=f"foto3_{k}")
+            
+            # Compilar solo las fotos que el invitado haya subido
+            uploaded_files = [f for f in [img1, img2, img3] if f is not None]
             
             col1, col2 = st.columns([1, 1])
             with col1:
