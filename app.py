@@ -656,25 +656,27 @@ if choice == "✨ Crear Recuerdo":
         with col2:
             message = st.text_input("Tu Dedicatoria", max_chars=100, placeholder="Ejem: ¡Felicidades hoy y siempre!", key="msg_input")
         
-        if st.button("💝 Crear y Guardar mi Recuerdo"):
-            if uploaded_files and message:
-                if len(uploaded_files) > 3:
-                    st.warning("Solo se procesarán las primeras 3 fotos. ¡Elige las mejores! ✨")
-                
-                with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
-                    result_path = process_image(uploaded_files, message, guest_name)
-                    if result_path:
-                        # Generar PDF individual
-                        pdf_path, _ = generate_pdf(single_image=result_path)
-                        
-                        # Guardar en estado para persistencia tras el rerun
-                        st.session_state.last_result_path = result_path
-                        st.session_state.last_pdf_path = pdf_path
-                        st.session_state.show_celebration = True
-                        st.session_state.creation_time = time.time() # Registrar momento de creación
-                        st.rerun()
-            else:
-                st.warning("Por favor, sube al menos una foto y escribe un mensaje para que podamos atesorarlo.")
+        # Solo mostrar el botón si no hay un recuerdo recién generado
+        if not st.session_state.get('last_result_path'):
+            if st.button("💝 Crear y Guardar mi Recuerdo"):
+                if uploaded_files and message:
+                    if len(uploaded_files) > 3:
+                        st.warning("Solo se procesarán las primeras 3 fotos. ¡Elige las mejores! ✨")
+                    
+                    with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
+                        result_path = process_image(uploaded_files, message, guest_name)
+                        if result_path:
+                            # Generar PDF individual
+                            pdf_path, _ = generate_pdf(single_image=result_path)
+                            
+                            # Guardar en estado para persistencia tras el rerun
+                            st.session_state.last_result_path = result_path
+                            st.session_state.last_pdf_path = pdf_path
+                            st.session_state.show_celebration = True
+                            st.session_state.creation_time = time.time() # Registrar momento de creación
+                            st.rerun()
+                else:
+                    st.warning("Por favor, sube al menos una foto y escribe un mensaje para que podamos atesorarlo.")
 
         # --- MOSTRAR RESULTADOS PERSISTENTES ---
         if st.session_state.get('last_result_path'):
