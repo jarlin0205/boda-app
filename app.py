@@ -500,8 +500,8 @@ def process_image(uploaded_files, message, guest_name=""):
             guest_name = guest_name[0].upper() + guest_name[1:] if guest_name else ""
             
         msg_y_base = sec_y + sec_h + 30
-        # Dedicatoria: Serif Bold para máxima legibilidad y elegancia
-        m_font = get_font(52, bold=True) 
+        # Dedicatoria: Serif Bold para máxima legibilidad (Tamaño refinado para equilibrio)
+        m_font = get_font(46, bold=True) 
         
         wrapped_lines = []
         words = message.split()
@@ -516,7 +516,7 @@ def process_image(uploaded_files, message, guest_name=""):
         wrapped_lines.append(current_line.strip())
 
         for i, l_text in enumerate(wrapped_lines[:5]):
-            line_y = msg_y_base + (i * 55)
+            line_y = msg_y_base + (i * 50)
             draw_text_with_halo((canvas_width//2, line_y), l_text, m_font, dark_text)
 
         # --- FIRMA DEL INVITADO ---
