@@ -522,14 +522,14 @@ def process_image(uploaded_files, message, guest_name=""):
         # --- FIRMA DEL INVITADO ---
         if guest_name:
             sig_font = get_font(42, cursive=True)
-            sig_y = msg_y_base + (len(wrapped_lines[:5]) * 55) + 35
+            sig_y = msg_y_base + (len(wrapped_lines[:5]) * 50) + 35
             draw_text_with_halo((canvas_width//2, sig_y), f"— {guest_name.strip()} —", sig_font, accent_text)
 
-        # Pie de página (Bajamos al límite para dar aire)
-        footer_y = 1860 
+        # Pie de página (Subimos para dar aire y evitar superposición)
+        footer_y = 1835 
         footer_font = get_font(35, cursive=True)
         draw.line([380, footer_y, 700, footer_y], fill=gold_color, width=1)
-        draw_text_with_halo((canvas_width//2, footer_y + 40), "Para siempre &  por siempre", footer_font, accent_text)
+        draw_text_with_halo((canvas_width//2, footer_y + 40), "Para siempre & por siempre", footer_font, accent_text)
 
         # --- 7. GUARDAR ---
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
