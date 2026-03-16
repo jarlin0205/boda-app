@@ -565,7 +565,7 @@ def generate_pdf(single_image=None):
             images.sort(key=os.path.getmtime, reverse=True)
             
         if not images:
-            return None
+            return None, 0
             
         for img_path in images:
             if os.path.exists(img_path):
