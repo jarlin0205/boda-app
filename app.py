@@ -390,19 +390,39 @@ def process_image(uploaded_files, message, guest_name=""):
             
         # --- 4. ENCABEZADO Y TIPOGRAFÍA ---
         def get_font(size, bold=False, cursive=False):
-            # Fuentes de boda de alta gama (Windows common fonts)
+            # Fuentes de boda de alta gama
             font_candidates = []
             if cursive:
-                # Priorizar caligrafía de ultra-lujo
-                font_candidates += ["ITCEDSCR.TTF", "PLSCRT.TTF", "vladimir.ttf", "mtcorsva.ttf", "gabriola.ttf"]
+                # Nombres de archivos de fuentes de lujo
+                font_candidates += ["ITCEDSCR.TTF", "script.ttf", "Edwardian Script ITC.ttf", "PLSCRT.TTF", "vladimir.ttf", "mtcorsva.ttf"]
             if bold:
-                font_candidates += ["georgiab.ttf", "timesbd.ttf"]
-            font_candidates += ["georgia.ttf", "times.ttf", "arial.ttf"]
+                font_candidates += ["georgiab.ttf", "timesbd.ttf", "DejaVuSerif-Bold.ttf", "LiberationSerif-Bold.ttf"]
+            
+            font_candidates += ["georgia.ttf", "times.ttf", "DejaVuSerif.ttf", "LiberationSerif-Regular.ttf", "arial.ttf"]
             
             for f_name in font_candidates:
-                try: return ImageFont.truetype(f_name, size)
-                except: continue
-            return ImageFont.load_default()
+                # 1. Probar en la carpeta assets (RECOMENDADO PARA LA NUBE)
+                asset_path = os.path.join(ASSETS_DIR, f_name)
+                # 2. Probar por nombre directo (Windows system fonts)
+                # 3. Probar en rutas comunes de Linux (Nube)
+                linux_paths = ["/usr/share/fonts/truetype/dejavu/", "/usr/share/fonts/truetype/liberation/"]
+                
+                search_targets = [asset_path, f_name]
+                for lp in linux_paths:
+                    search_targets.append(os.path.join(lp, f_name))
+                
+                for target in search_targets:
+                    try:
+                        return ImageFont.truetype(target, size)
+                    except:
+                        continue
+            
+            # Si nada funciona, al menos que no sea diminuto
+            try:
+                # Intentar cargar la fuente default de Linux que sí acepta tamaño en versiones nuevas
+                return ImageFont.truetype("DejaVuSerif.ttf", size)
+            except:
+                return ImageFont.load_default()
 
         # Helper para dibujar texto con resalte (aura oro suave más fuerte)
         def draw_text_with_halo(pos, text, font, fill, anchor="mm"):
