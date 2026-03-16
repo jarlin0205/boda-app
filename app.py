@@ -9,7 +9,7 @@ import cloudinary.uploader
 import cloudinary.api
 
 # --- CONFIGURACIÓN DE PÁGINA ---
-st.set_page_config(page_title="Katy & Wilvidez - Wedding Album", page_icon="💍", layout="wide")
+st.set_page_config(page_title="Wilvidez & Katy Jimenez - Wedding Album", page_icon="💍", layout="wide")
 
 # Directorios
 GALLERY_DIR = "galeria"
@@ -256,6 +256,22 @@ st.markdown("""
         max-width: 100% !important;
         height: auto !important;
     }
+    
+    .footer {
+        margin-top: 50px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(201, 169, 110, 0.3);
+    }
+    
+    .copyright {
+        font-size: 0.85rem !important;
+        color: #8a6d3b !important;
+        text-align: center;
+        margin-top: 15px;
+        font-style: normal !important;
+        letter-spacing: 0.5px;
+        opacity: 0.8;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -444,7 +460,7 @@ def process_image(uploaded_files, message, guest_name=""):
         draw_text_with_halo((canvas_width//2, 330), "Nuestra Boda", names_font_main, dark_text)
         
         # 2. Subtítulo de los Novios (Ajuste dinámico)
-        names_text = "Katy Jimenez & Wilvidez Toro"
+        names_text = "Wilvidez Toro & Katy Jimenez "
         base_size = 85
         names_font_sub = get_font(base_size, cursive=True)
         
@@ -604,7 +620,7 @@ choice = st.sidebar.selectbox("Explorar:", menu)
 
 if choice == "✨ Crear Recuerdo":
     st.markdown('<h1 class="wedding-title" style="margin-bottom: -20px;">Nuestra Boda</h1>', unsafe_allow_html=True)
-    st.markdown('<h2 class="novios-title" style="font-family: \'Edwardian Script ITC\', \'Palace Script MT\', cursive; font-size: 3.5rem; color: #8a6d3b; text-align: center; margin-bottom: 20px;">Katy Jimenez & Wilvidez Toro</h2>', unsafe_allow_html=True)
+    st.markdown('<h2 class="novios-title" style="font-family: \'Edwardian Script ITC\', \'Palace Script MT\', cursive; font-size: 3.5rem; color: #8a6d3b; text-align: center; margin-bottom: 20px;">Wilvidez Toro & Katy Jimenez</h2>', unsafe_allow_html=True)
     
     # Ejecutar celebración si está activa en el estado
     celebrate_wedding()
@@ -675,7 +691,15 @@ if choice == "✨ Crear Recuerdo":
                 if remaining > 0:
                     st.caption(f"La pantalla se limpiará automáticamente en {remaining} segundos.")
 
-    st.markdown('<div class="footer">"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección."</div>', unsafe_allow_html=True)
+    st.markdown("""
+        <div class="footer">
+            <p>"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección."</p>
+            <div class="copyright">
+                Creado y diseñado por <b>Jarlin Esquivel</b> Ing Sistemas <br>
+                Contacto: <a href="mailto:jarlinesquivel239@gmail.com" style="color: #8a6d3b; text-decoration: none;">jarlinesquivel239@gmail.com</a>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 else:
     if not st.session_state.is_logged_in:
@@ -691,7 +715,7 @@ else:
         if st.session_state.admin_view == 'panel':
             # Título de bienvenida del Administrador
             st.markdown('<h1 class="wedding-title" style="font-size: 2.8rem; border-bottom: 2px solid #c9a96e; padding-bottom: 10px;">Panel de Administrador</h1>', unsafe_allow_html=True)
-            st.markdown('<h2 class="novios-title" style="font-family: \'Edwardian Script ITC\', \'Palace Script MT\', cursive; font-size: 3rem; color: #8a6d3b; text-align: center; margin-top: 10px;">Katy Jimenez & Wilvidez Toro</h2>', unsafe_allow_html=True)
+            st.markdown('<h2 class="novios-title" style="font-family: \'Edwardian Script ITC\', \'Palace Script MT\', cursive; font-size: 3rem; color: #8a6d3b; text-align: center; margin-top: 10px;">Wilvidez Toro & Katy Jimenez</h2>', unsafe_allow_html=True)
             
             st.success("¡Bienvenido al sistema central de recuerdos! ✨")
             
