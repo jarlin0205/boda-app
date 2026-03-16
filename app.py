@@ -529,7 +529,7 @@ def process_image(uploaded_files, message, guest_name=""):
         footer_y = 1860 
         footer_font = get_font(35, cursive=True)
         draw.line([380, footer_y, 700, footer_y], fill=gold_color, width=1)
-        draw_text_with_halo((canvas_width//2, footer_y + 40), "Para siempre & por siempre", footer_font, accent_text)
+        draw_text_with_halo((canvas_width//2, footer_y + 40), "Para siempre &  por siempre", footer_font, accent_text)
 
         # --- 7. GUARDAR ---
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
