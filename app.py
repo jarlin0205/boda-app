@@ -643,21 +643,20 @@ if choice == "✨ Crear Recuerdo":
             reset_form()
             st.rerun()
             
-    st.subheader("📸 Comparte tu Alegría")
-    st.write("Tu presencia hace este día aún más especial. Sube hasta 3 de tus momentos favoritos y deja un mensaje con todo tu amor.")
-    
-    with st.container():
-        # Usamos una llave dinámica para poder resetearlo
-        uploader_key = f"file_input_{st.session_state.file_uploader_key}"
-        uploaded_files = st.file_uploader("Selecciona tus fotos más felices (máximo 3)", type=["jpg", "png", "jpeg"], accept_multiple_files=True, key=uploader_key)
-        col1, col2 = st.columns([1, 1])
-        with col1:
-            guest_name = st.text_input("Tu Nombre o Familia", placeholder="Ejem: Juan y María / Familia Pérez", key="guest_input")
-        with col2:
-            message = st.text_input("Tu Dedicatoria", max_chars=100, placeholder="Ejem: ¡Felicidades hoy y siempre!", key="msg_input")
+    if not st.session_state.get('last_result_path'):
+        st.subheader("📸 Comparte tu Alegría")
+        st.write("Tu presencia hace este día aún más especial. Sube hasta 3 de tus momentos favoritos y deja un mensaje con todo tu amor.")
         
-        # Solo mostrar el botón si no hay un recuerdo recién generado
-        if not st.session_state.get('last_result_path'):
+        with st.container():
+            # Usamos una llave dinámica para poder resetearlo
+            uploader_key = f"file_input_{st.session_state.file_uploader_key}"
+            uploaded_files = st.file_uploader("Selecciona tus fotos más felices (máximo 3)", type=["jpg", "png", "jpeg"], accept_multiple_files=True, key=uploader_key)
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                guest_name = st.text_input("Tu Nombre o Familia", placeholder="Ejem: Juan y María / Familia Pérez", key="guest_input")
+            with col2:
+                message = st.text_input("Tu Dedicatoria", max_chars=100, placeholder="Ejem: ¡Felicidades hoy y siempre!", key="msg_input")
+            
             if st.button("💝 Crear y Guardar mi Recuerdo"):
                 if uploaded_files and message:
                     if len(uploaded_files) > 3:
