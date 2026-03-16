@@ -500,8 +500,8 @@ def process_image(uploaded_files, message, guest_name=""):
             guest_name = guest_name[0].upper() + guest_name[1:] if guest_name else ""
             
         msg_y_base = sec_y + sec_h + 60
-        # Reducimos un poco más para máxima elegancia y seguridad
-        m_font = get_font(38, cursive=True) 
+        # Dedicatoria: Serif Bold para máxima legibilidad y elegancia
+        m_font = get_font(52, bold=True) 
         
         wrapped_lines = []
         words = message.split()
@@ -516,13 +516,13 @@ def process_image(uploaded_files, message, guest_name=""):
         wrapped_lines.append(current_line.strip())
 
         for i, l_text in enumerate(wrapped_lines[:5]):
-            line_y = msg_y_base + (i * 45)
+            line_y = msg_y_base + (i * 60)
             draw_text_with_halo((canvas_width//2, line_y), l_text, m_font, dark_text)
 
         # --- FIRMA DEL INVITADO ---
         if guest_name:
-            sig_font = get_font(32, cursive=True)
-            sig_y = msg_y_base + (len(wrapped_lines[:5]) * 45) + 35
+            sig_font = get_font(48, cursive=True)
+            sig_y = msg_y_base + (len(wrapped_lines[:5]) * 60) + 40
             draw_text_with_halo((canvas_width//2, sig_y), f"— {guest_name.strip()} —", sig_font, accent_text)
 
         # Pie de página (Subimos para evitar cortes en el borde de 1920)
