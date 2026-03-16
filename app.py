@@ -69,7 +69,7 @@ def get_base64(bin_file):
     return base64.b64encode(data).decode()
 
 # Imagen de fondo específica del usuario
-BG_IMAGE_PATH = os.path.join(GALLERY_DIR, "WhatsApp Image 2026-03-12 at 7.05.39 PM.jpeg")
+BG_IMAGE_PATH = os.path.join(ASSETS_DIR, "background_wedding.jpg")
 if os.path.exists(BG_IMAGE_PATH):
     bin_str = get_base64(BG_IMAGE_PATH)
     page_bg_img = f'''
@@ -316,7 +316,7 @@ def process_image(uploaded_files, message, guest_name=""):
         canvas = Image.new("RGB", (canvas_width, canvas_height), cream_bg)
         
         # --- 2. FILIGRANA DE FONDO (MARCA DE AGUA) ---
-        bg_path = os.path.join("galeria", "WhatsApp Image 2026-03-12 at 7.05.39 PM.jpeg")
+        bg_path = os.path.join(ASSETS_DIR, "background_wedding.jpg")
         if os.path.exists(bg_path):
             try:
                 bg_img = Image.open(bg_path).convert("RGBA")
