@@ -344,6 +344,17 @@ def celebrate_wedding():
         # Desactivar estado tras renderizar
         st.session_state.show_celebration = False
 
+def show_footer():
+    st.markdown("""
+        <div class="footer">
+            <p>"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección."</p>
+            <div class="copyright">
+                Creado y diseñado por <b>Jarlin Esquivel</b> Ing Sistemas <br>
+                Contacto: <a href="mailto:jarlinesquivel239@gmail.com" style="color: #8a6d3b; text-decoration: none;">jarlinesquivel239@gmail.com</a>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
 def process_image(uploaded_files, message, guest_name=""):
     try:
         # --- 1. CONFIGURACIÓN Y LIENZO ---
@@ -691,15 +702,7 @@ if choice == "✨ Crear Recuerdo":
                 if remaining > 0:
                     st.caption(f"La pantalla se limpiará automáticamente en {remaining} segundos.")
 
-    st.markdown("""
-        <div class="footer">
-            <p>"El amor no consiste en mirarse el uno al otro, sino en mirar juntos en la misma dirección."</p>
-            <div class="copyright">
-                Creado y diseñado por <b>Jarlin Esquivel</b> Ing Sistemas <br>
-                Contacto: <a href="mailto:jarlinesquivel239@gmail.com" style="color: #8a6d3b; text-decoration: none;">jarlinesquivel239@gmail.com</a>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    show_footer()
 
 else:
     if not st.session_state.is_logged_in:
@@ -711,6 +714,8 @@ else:
                 st.rerun()
             else:
                 st.error("Lo sentimos, esa no es la llave correcta. Inténtalo de nuevo. ✨")
+        
+        show_footer()
     else:
         if st.session_state.admin_view == 'panel':
             # Título de bienvenida del Administrador
@@ -804,6 +809,8 @@ else:
                     cols[idx % 4].image(img_path, use_container_width=True)
             else:
                 st.warning("El álbum aún está esperando su primera sonrisa.")
+            
+            show_footer()
 
         elif st.session_state.admin_view == 'viewer':
             # MODO VISOR DIGITAL (Pantalla Completa)
@@ -842,4 +849,6 @@ else:
                 st.write("---")
                 if st.button("🔝 Volver al Inicio del Álbum"):
                     st.rerun()
+            
+            show_footer()
 
