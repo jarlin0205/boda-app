@@ -240,37 +240,32 @@ st.markdown("""
         box-shadow: 0 6px 20px rgba(201, 169, 110, 0.5) !important;
     }
 
-    /* Cargadores de Fotos - Diseño Premium */
+    /* Cargadores de Fotos - Estilo Luxury minimalista */
     section[data-testid="stFileUploadDropzone"] {
-        background: linear-gradient(135deg, #fdf8f0 0%, #faf5ed 100%) !important;
-        border: 2px dashed #c9a96e !important;
-        border-radius: 16px !important;
-        padding: 20px 15px !important;
+        background: rgba(250,245,237,0.6) !important;
+        border: 1px solid rgba(201,169,110,0.5) !important;
+        border-radius: 10px !important;
+        padding: 12px 10px !important;
         transition: all 0.3s ease !important;
     }
     section[data-testid="stFileUploadDropzone"]:hover {
-        border-color: #8a6d3b !important;
-        background: linear-gradient(135deg, #fdf5e0 0%, #f5edd8 100%) !important;
-        box-shadow: 0 4px 20px rgba(201,169,110,0.25) !important;
-        transform: translateY(-2px);
+        border-color: #c9a96e !important;
+        background: rgba(253,248,240,0.9) !important;
+        box-shadow: 0 2px 12px rgba(201,169,110,0.18) !important;
     }
-    /* Texto del dropzone */
     section[data-testid="stFileUploadDropzone"] p {
         color: #8a6d3b !important;
-        font-size: 0.9rem !important;
-        font-weight: 600 !important;
+        font-size: 0.8rem !important;
+        font-style: italic !important;
     }
-    /* Ícono de carga */
     section[data-testid="stFileUploadDropzone"] svg {
         color: #c9a96e !important;
-        width: 32px !important;
-        height: 32px !important;
     }
-    /* Etiqueta del file uploader */
-    .stFileUploader label {
-        font-size: 1.05rem !important;
-        font-weight: 700 !important;
-        color: #2a1f14 !important;
+    .stFileUploader label p {
+        font-family: 'Cormorant Garamond', 'Georgia', serif !important;
+        font-size: 0.95rem !important;
+        font-style: italic !important;
+        color: #5a3e28 !important;
         letter-spacing: 0.5px !important;
     }
 
@@ -675,34 +670,26 @@ if choice == "✨ Crear Recuerdo":
         
         with st.container():
             st.markdown("""
-                <div style="
-                    background: linear-gradient(135deg, #2a1f14 0%, #4a3520 100%);
-                    border-radius: 16px;
-                    padding: 18px 22px 10px 22px;
-                    margin-bottom: 18px;
-                    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-                ">
-                    <p style="color:#c9a96e; font-size:1.25rem; font-weight:800; margin:0 0 4px 0; letter-spacing:1px;">📸 SUBE TUS FOTOS</p>
-                    <p style="color:#e8d5b0; font-size:0.85rem; margin:0;">Elige 1, 2 o 3 fotos — cada una tiene su espacio especial</p>
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:18px; margin-top:6px;">
+                    <div style="flex:1; height:1px; background:linear-gradient(to right, transparent, #c9a96e);"></div>
+                    <span style="color:#8a6d3b; font-family:'Cormorant Garamond','Georgia',serif; font-style:italic; font-size:1rem; white-space:nowrap;">tus momentos favoritos</span>
+                    <div style="flex:1; height:1px; background:linear-gradient(to left, transparent, #c9a96e);"></div>
                 </div>
             """, unsafe_allow_html=True)
             
             k = st.session_state.file_uploader_key
             col_f1, col_f2, col_f3 = st.columns(3)
             with col_f1:
-                st.markdown('<p style="text-align:center; font-size:2rem; margin-bottom:4px;">1️⃣</p>', unsafe_allow_html=True)
-                img1 = st.file_uploader("Foto Principal", type=["jpg", "png", "jpeg"], key=f"foto1_{k}")
+                img1 = st.file_uploader("✨ Foto Principal", type=["jpg", "png", "jpeg"], key=f"foto1_{k}")
             with col_f2:
-                st.markdown('<p style="text-align:center; font-size:2rem; margin-bottom:4px;">2️⃣</p>', unsafe_allow_html=True)
-                img2 = st.file_uploader("Segunda Foto", type=["jpg", "png", "jpeg"], key=f"foto2_{k}")
+                img2 = st.file_uploader("🏵️ Segunda Foto", type=["jpg", "png", "jpeg"], key=f"foto2_{k}")
             with col_f3:
-                st.markdown('<p style="text-align:center; font-size:2rem; margin-bottom:4px;">3️⃣</p>', unsafe_allow_html=True)
-                img3 = st.file_uploader("Tercera Foto", type=["jpg", "png", "jpeg"], key=f"foto3_{k}")
+                img3 = st.file_uploader("🏵️ Tercera Foto", type=["jpg", "png", "jpeg"], key=f"foto3_{k}")
             
             # Compilar solo las fotos que el invitado haya subido
             uploaded_files = [f for f in [img1, img2, img3] if f is not None]
             if uploaded_files:
-                st.success(f"✅ {len(uploaded_files)} foto(s) lista(s). ¡Ahora escribe tu mensaje!")
+                st.markdown(f'<p style="text-align:center; color:#8a6d3b; font-style:italic; font-size:0.9rem; margin-top:4px;">&#10003; {len(uploaded_files)} foto(s) seleccionada(s)</p>', unsafe_allow_html=True)
             
             col1, col2 = st.columns([1, 1])
             with col1:
