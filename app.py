@@ -140,9 +140,10 @@ def delete_memory(filename):
             os.remove(local_path)
             
         # 2. Borrado en Cloudinary
-        # El public_id en mi config es recuerdos_boda/nombre_sin_extension
-        public_id = f"recuerdos_boda/{filename.replace('.png', '')}"
-        cloudinary.uploader.destroy(public_id)
+        filename_no_ext = filename.replace('.png', '')
+        # Borrar formato nuevo y formato antiguo por seguridad
+        cloudinary.uploader.destroy(f"recuerdos_boda/{filename_no_ext}")
+        cloudinary.uploader.destroy(f"recuerdos_boda/boda/{filename_no_ext}")
         return True
     except Exception as e:
         st.error(f"Error al borrar: {e}")
@@ -541,7 +542,7 @@ def process_image(uploaded_files, message, guest_name=""):
             with st.spinner("Sincronizando con la nube..."):
                 upload_result = cloudinary.uploader.upload(
                     final_path,
-                    public_id = f"boda/editorial_{timestamp}",
+                    public_id = f"editorial_{timestamp}",
                     folder = "recuerdos_boda"
                 )
         except Exception as cloud_err:
@@ -752,7 +753,16 @@ else:
                 
                 # Usar tabs o expansores para no saturar la vista móvil
                 with st.expander("🗑️ PANEL DE BORRADO DE PRUEBAS"):
-                    # Crear filas para borrado
+                    if st.button("⚠️ Limpiar Todo el Álbum (CUIDADO)"):
+                        with st.spinner("Borrando todo permanentemente de la nube y servidor..."):
+                            for f in files:
+                                delete_memory(f)
+                            st.success("¡Álbum completamente limpio y formateado!")
+                            st.rerun()
+                            
+                    st.write("---")
+                    
+                    # Crear filas para borrado individual
                     for f in files:
                         col_img, col_btn = st.columns([3, 1])
                         with col_img:
@@ -760,7 +770,7 @@ else:
                         with col_btn:
                             if st.button("Borrar", key=f"del_{f}"):
                                 if delete_memory(f):
-                                    st.success(f"¡{f} eliminado!")
+                                    st.success(f"¡{f} eliminado permanentemente!")
                                     st.rerun()
                 
                 st.write("#### Vista Previa Rápida")
