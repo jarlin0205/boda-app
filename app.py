@@ -16,6 +16,12 @@ GALLERY_DIR = "galeria"
 ASSETS_DIR = "assets"
 FRAME_PATH = os.path.join(ASSETS_DIR, "marco.png")
 
+# Asegurar que los directorios existan al iniciar (Evita FileNotFoundError en la nube)
+if not os.path.exists(GALLERY_DIR):
+    os.makedirs(GALLERY_DIR)
+if not os.path.exists(ASSETS_DIR):
+    os.makedirs(ASSETS_DIR)
+
 # --- CONFIGURACIÓN DE CLOUDINARY (Cloud Storage) ---
 # Usamos secretos de Streamlit para la nube, y las llaves proporcionadas para local
 try:
@@ -124,6 +130,23 @@ def sync_from_cloudinary():
     except Exception as e:
         st.error(f"Error al sincronizar: {e}")
         return 0
+
+def delete_memory(filename):
+    """Borra un recuerdo localmente y en Cloudinary"""
+    try:
+        # 1. Borrado Local
+        local_path = os.path.join(GALLERY_DIR, filename)
+        if os.path.exists(local_path):
+            os.remove(local_path)
+            
+        # 2. Borrado en Cloudinary
+        # El public_id en mi config es recuerdos_boda/nombre_sin_extension
+        public_id = f"recuerdos_boda/{filename.replace('.png', '')}"
+        cloudinary.uploader.destroy(public_id)
+        return True
+    except Exception as e:
+        st.error(f"Error al borrar: {e}")
+        return False
 
 # --- ESTILOS PREMIUM (Diseño Editorial y Responsivo) ---
 st.markdown("""
@@ -695,9 +718,32 @@ else:
                         )
             
             st.write("---")
-            st.write("### 📸 Galería Instantánea")
+            st.write("### 📸 Galería y Control de Contenido")
+            
+            # Asegurar que el directorio existe antes de listar
+            if not os.path.exists(GALLERY_DIR):
+                os.makedirs(GALLERY_DIR)
+                
             files = [f for f in os.listdir(GALLERY_DIR) if f.startswith('editorial_') or f.startswith('recuerdo_')]
+            files.sort(key=lambda x: os.path.getmtime(os.path.join(GALLERY_DIR, x)), reverse=True)
+            
             if len(files) > 0:
+                st.info(f"Mostrando {len(files)} recuerdos. Puedes eliminarlos si son pruebas.")
+                
+                # Usar tabs o expansores para no saturar la vista móvil
+                with st.expander("🗑️ PANEL DE BORRADO DE PRUEBAS"):
+                    # Crear filas para borrado
+                    for f in files:
+                        col_img, col_btn = st.columns([3, 1])
+                        with col_img:
+                            st.write(f"📄 {f}")
+                        with col_btn:
+                            if st.button("Borrar", key=f"del_{f}"):
+                                if delete_memory(f):
+                                    st.success(f"¡{f} eliminado!")
+                                    st.rerun()
+                
+                st.write("#### Vista Previa Rápida")
                 cols = st.columns(4)
                 for idx, file in enumerate(files):
                     img_path = os.path.join(GALLERY_DIR, file)
