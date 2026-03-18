@@ -209,15 +209,25 @@ st.markdown("""
         margin-top: 20px !important;
     }
 
-    /* Inputs Luxury */
+    /* Inputs Luxury - Legibles en modo claro Y oscuro */
     .stTextInput input, .stTextArea textarea {
-        background-color: transparent !important;
+        background-color: #fdf8f2 !important;  /* Crema suave — visible siempre */
         border: none !important;
         border-bottom: 1.5px solid #c9a96e !important;
-        border-radius: 0 !important;
-        color: #1a140f !important;
+        border-radius: 4px 4px 0 0 !important;
+        color: #1a140f !important;             /* Texto casi negro — legible siempre */
         font-size: 1.3rem !important;
-        padding-bottom: 5px !important;
+        padding: 6px 8px 5px 8px !important;
+        caret-color: #8a6d3b !important;       /* Cursor dorado */
+    }
+    .stTextInput input::placeholder, .stTextArea textarea::placeholder {
+        color: #b0926a !important;
+        opacity: 0.7 !important;
+    }
+    /* Label de los inputs */
+    .stTextInput label, .stTextArea label {
+        color: #5a3e28 !important;
+        font-style: italic !important;
     }
 
     /* Botón Premium */
