@@ -754,7 +754,7 @@ else:
         st.subheader("🔐 Acceso al Tesoro de Recuerdos")
         password = st.text_input("Contraseña de Administrador", type="password")
         if st.button("🗝️ Ingresar al Sistema"):
-            if password == "admin123":
+            if password == "willykaty2026":
                 st.session_state.is_logged_in = True
                 st.rerun()
             else:
