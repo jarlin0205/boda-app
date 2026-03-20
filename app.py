@@ -213,11 +213,11 @@ st.markdown("""
     .stTextInput input, .stTextArea textarea {
         background-color: #fdf8f2 !important;  /* Crema suave — visible siempre */
         border: none !important;
-        border-bottom: 1.5px solid #c9a96e !important;
+        border-bottom: 2px solid #c9a96e !important;
         border-radius: 4px 4px 0 0 !important;
         color: #1a140f !important;             /* Texto casi negro — legible siempre */
-        font-size: 1.3rem !important;
-        padding: 6px 8px 5px 8px !important;
+        font-size: 1.6rem !important;          /* Letra más grande y elegante */
+        padding: 5px 12px 6px 12px !important;
         caret-color: #8a6d3b !important;       /* Cursor dorado */
     }
     .stTextInput input::placeholder, .stTextArea textarea::placeholder {
