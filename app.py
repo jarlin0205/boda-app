@@ -710,7 +710,9 @@ if choice == "✨ Crear Recuerdo":
             if st.button("💝 Crear y Guardar mi Recuerdo"):
                 if uploaded_files and message:
                     with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
-                        result_path = process_image(uploaded_files, message, guest_name)
+                        # Asegurar que el nombre tenga mayúsculas en cada palabra
+                        guest_name_formatted = guest_name.title().strip()
+                        result_path = process_image(uploaded_files, message, guest_name_formatted)
                         if result_path:
                             pdf_path, _ = generate_pdf(single_image=result_path)
                             st.session_state.last_result_path = result_path
