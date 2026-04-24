@@ -7,6 +7,7 @@ import time
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
+import hashlib
 
 # --- CONFIGURACIÓN DE PÁGINA ---
 st.set_page_config(page_title="Wilvidez & Katy Jimenez - Wedding Album", page_icon="💍", layout="wide")
@@ -49,12 +50,13 @@ except:
         secure = True
     )
 
-# --- INICIALIZACIÓN DE ESTADO SEGURO ---
 # admin_view: 'panel' o 'viewer'
-for key in ['last_result_path', 'last_pdf_path', 'show_celebration', 'creation_time', 'is_logged_in', 'admin_view']:
+for key in ['last_result_path', 'last_pdf_path', 'show_celebration', 'creation_time', 'is_logged_in', 'admin_view', 'is_processing', 'delete_confirm']:
     if key not in st.session_state:
-        if key in ['show_celebration', 'is_logged_in']:
+        if key in ['show_celebration', 'is_logged_in', 'is_processing']:
             st.session_state[key] = False
+        elif key == 'delete_confirm':
+            st.session_state[key] = None
         elif key == 'admin_view':
             st.session_state[key] = 'panel'
         else:
@@ -301,7 +303,57 @@ st.markdown("""
         margin-top: 15px;
         font-style: normal !important;
         letter-spacing: 0.5px;
+        letter-spacing: 0.5px;
         opacity: 0.8;
+    }
+
+    /* Estilos para el Modal y Botones de Borrado */
+    .delete-btn-container {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .delete-icon-btn button {
+        position: absolute !important;
+        top: 5px !important;
+        right: 5px !important;
+        background: rgba(200, 0, 0, 0.7) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 50% !important;
+        width: 25px !important;
+        height: 25px !important;
+        padding: 0 !important;
+        font-size: 14px !important;
+        line-height: 25px !important;
+        z-index: 10;
+        min-width: 25px !important;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
+    }
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        backdrop-filter: blur(4px);
+    }
+    
+    .modal-card {
+        background: #faf5ed;
+        padding: 40px;
+        border-radius: 20px;
+        border: 2px solid #c9a96e;
+        max-width: 450px;
+        text-align: center;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.3);
     }
     </style>
     """, unsafe_allow_html=True)
@@ -312,6 +364,7 @@ def reset_form():
     st.session_state.last_pdf_path = None
     st.session_state.show_celebration = False
     st.session_state.creation_time = None
+    st.session_state.is_processing = False
     # Limpiar los widgets usando sus llaves (keys)
     if 'guest_input' in st.session_state: st.session_state.guest_input = ""
     if 'msg_input' in st.session_state: st.session_state.msg_input = ""
@@ -590,17 +643,24 @@ def process_image(uploaded_files, message, guest_name=""):
         draw.line([380, footer_y, 700, footer_y], fill=gold_color, width=1)
         draw_text_with_halo((canvas_width//2, footer_y + 40), "Para siempre & por siempre", footer_font, accent_text)
 
-        # --- 7. GUARDAR ---
+        # --- 7. GUARDAR CON NOMBRE DETERMINISTA ---
+        # Creamos un hash corto del contenido para evitar duplicados exactos en el mismo segundo
+        content_str = f"{guest_name}{message}{len(uploaded_files)}"
+        content_hash = hashlib.md5(content_str.encode()).hexdigest()[:6]
+        
         timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-        final_path = os.path.join(GALLERY_DIR, f"editorial_{timestamp}.png")
+        # El nombre del archivo ahora es: editorial_FECHA_HASH.png
+        filename = f"editorial_{timestamp}_{content_hash}.png"
+        final_path = os.path.join(GALLERY_DIR, filename)
         canvas.save(final_path, "PNG")
         
         # --- 8. SUBIR A LA NUBE (CLOUDINARY) ---
         try:
             with st.spinner("Sincronizando con la nube..."):
+                public_id_cloud = f"editorial_{timestamp}_{content_hash}"
                 upload_result = cloudinary.uploader.upload(
                     final_path,
-                    public_id = f"editorial_{timestamp}",
+                    public_id = public_id_cloud,
                     folder = "recuerdos_boda"
                 )
         except Exception as cloud_err:
@@ -707,19 +767,25 @@ if choice == "✨ Crear Recuerdo":
             with col2:
                 message = st.text_input("Tu Dedicatoria", max_chars=100, placeholder="Ejem: ¡Felicidades hoy y siempre!", key="msg_input")
             
-            if st.button("💝 Crear y Guardar mi Recuerdo"):
+            if st.button("💝 Crear y Guardar mi Recuerdo", disabled=st.session_state.is_processing):
                 if uploaded_files and message:
-                    with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
-                        # Asegurar que el nombre tenga mayúsculas en cada palabra
-                        guest_name_formatted = guest_name.title().strip()
-                        result_path = process_image(uploaded_files, message, guest_name_formatted)
-                        if result_path:
-                            pdf_path, _ = generate_pdf(single_image=result_path)
-                            st.session_state.last_result_path = result_path
-                            st.session_state.last_pdf_path = pdf_path
-                            st.session_state.show_celebration = True
-                            st.session_state.creation_time = time.time()
-                            st.rerun()
+                    st.session_state.is_processing = True
+                    try:
+                        with st.spinner("Estamos preparando tu recuerdo con mucho cariño..."):
+                            # Asegurar que el nombre tenga mayúsculas en cada palabra
+                            guest_name_formatted = guest_name.title().strip()
+                            result_path = process_image(uploaded_files, message, guest_name_formatted)
+                            if result_path:
+                                pdf_path, _ = generate_pdf(single_image=result_path)
+                                st.session_state.last_result_path = result_path
+                                st.session_state.last_pdf_path = pdf_path
+                                st.session_state.show_celebration = True
+                                st.session_state.creation_time = time.time()
+                                st.session_state.is_processing = False
+                                st.rerun()
+                    except Exception as e:
+                        st.error(f"Ocurrió un error inesperado: {e}")
+                        st.session_state.is_processing = False
                 else:
                     st.warning("Por favor, sube al menos una foto y escribe un mensaje para que podamos atesorarlo.")
 
@@ -814,46 +880,82 @@ else:
                             use_container_width=True
                         )
             
+            # --- MODAL DE CONFIRMACIÓN ELEGANTE ---
+            if st.session_state.delete_confirm:
+                is_all = st.session_state.delete_confirm == "ALL_FILES"
+                title = "¿Formatear Álbum?" if is_all else "¿Eliminar recuerdo?"
+                body = "Esta acción borrará TODOS los recuerdos del sistema y de la nube. ¡Atención! No se puede deshacer." if is_all else "Esta acción borrará el recuerdo de manera permanente de la galería y de la nube. Esta acción no se puede deshacer."
+                
+                st.markdown(f"""
+                    <div class="modal-overlay">
+                        <div class="modal-card">
+                            <h2 style="color:#8a6d3b; font-family:'Playfair Display', serif; margin-bottom:10px;">{title}</h2>
+                            <p style="color:#1a140f; margin-bottom:25px;">{body}</p>
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
+                m_col1, m_col2, m_col3, m_col4 = st.columns([1,2,2,1])
+                with m_col2:
+                    if st.button("❌ Cancelar", key="cancel_del"):
+                        st.session_state.delete_confirm = None
+                        st.rerun()
+                with m_col3:
+                    confirm_label = "🔴 Sí, Formatear" if is_all else "🗑️ Sí, Eliminar"
+                    if st.button(confirm_label, key="confirm_del"):
+                        if is_all:
+                            with st.spinner("Limpiando sistema..."):
+                                for f in files: delete_memory(f)
+                            st.toast("Álbum formateado con éxito", icon="🔥")
+                        else:
+                            filename = st.session_state.delete_confirm
+                            if delete_memory(filename):
+                                st.toast("Recuerdo eliminado con éxito", icon="✅")
+                        
+                        st.session_state.delete_confirm = None
+                        st.rerun()
+            
             st.write("---")
             st.write("### 📸 Galería y Control de Contenido")
             
-            # Asegurar que el directorio existe antes de listar
-            if not os.path.exists(GALLERY_DIR):
-                os.makedirs(GALLERY_DIR)
-                
             files = [f for f in os.listdir(GALLERY_DIR) if f.startswith('editorial_') or f.startswith('recuerdo_')]
             files.sort(key=lambda x: os.path.getmtime(os.path.join(GALLERY_DIR, x)), reverse=True)
             
             if len(files) > 0:
-                st.info(f"Mostrando {len(files)} recuerdos. Puedes eliminarlos si son pruebas.")
+                st.info(f"Mostrando {len(files)} recuerdos en el sistema.")
                 
-                # Usar tabs o expansores para no saturar la vista móvil
-                with st.expander("🗑️ PANEL DE BORRADO DE PRUEBAS"):
-                    if st.button("⚠️ Limpiar Todo el Álbum (CUIDADO)"):
-                        with st.spinner("Borrando todo permanentemente de la nube y servidor..."):
-                            for f in files:
-                                delete_memory(f)
-                            st.success("¡Álbum completamente limpio y formateado!")
-                            st.rerun()
+                # Grid de eliminación visual
+                rows = (len(files) + 3) // 4
+                for r in range(rows):
+                    cols = st.columns(4)
+                    for c in range(4):
+                        idx = r * 4 + c
+                        if idx < len(files):
+                            f = files[idx]
+                            img_path = os.path.join(GALLERY_DIR, f)
                             
-                    st.write("---")
-                    
-                    # Crear filas para borrado individual
-                    for f in files:
-                        col_img, col_btn = st.columns([3, 1])
-                        with col_img:
-                            st.write(f"📄 {f}")
-                        with col_btn:
-                            if st.button("Borrar", key=f"del_{f}"):
-                                if delete_memory(f):
-                                    st.success(f"¡{f} eliminado permanentemente!")
+                            with cols[c]:
+                                # Contenedor con botón 'X' en la esquina
+                                st.markdown('<div class="delete-btn-container"><div class="delete-icon-btn">', unsafe_allow_html=True)
+                                st.image(img_path, use_container_width=True)
+                                if st.button("x", key=f"btn_del_{f}"):
+                                    st.session_state.delete_confirm = f
                                     st.rerun()
+                                st.markdown('</div></div>', unsafe_allow_html=True)
+                                # Un pequeño pie de foto con el nombre original por control (opcional)
+                                st.caption(f[:15]+"...")
                 
-                st.write("#### Vista Previa Rápida")
-                cols = st.columns(4)
-                for idx, file in enumerate(files):
-                    img_path = os.path.join(GALLERY_DIR, file)
-                    cols[idx % 4].image(img_path, use_container_width=True)
+                st.write("---")
+                with st.expander("⚠️ ACCIONES GLOBALES"):
+                    if st.button("🔴 Formatear Álbum Completo"):
+                        st.session_state.delete_confirm = "ALL_FILES"
+                        st.rerun()
+                        
+                # Lógica especial para borrar todo
+                if st.session_state.delete_confirm == "ALL_FILES":
+                    # Actualizar modal para borrado masivo
+                    st.rerun() # Esto disparará el modal de arriba con la lógica de confirmación adaptada si quisiéramos, 
+                               # pero por ahora mantenemos el flujo simple.
             else:
                 st.warning("El álbum aún está esperando su primera sonrisa.")
             
