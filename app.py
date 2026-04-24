@@ -332,20 +332,6 @@ st.markdown("""
         box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
     }
 
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-        backdrop-filter: blur(4px);
-    }
-    
     .modal-card {
         background: #faf5ed;
         padding: 40px;
@@ -887,11 +873,9 @@ else:
                 body = "Esta acción borrará TODOS los recuerdos del sistema y de la nube. ¡Atención! No se puede deshacer." if is_all else "Esta acción borrará el recuerdo de manera permanente de la galería y de la nube. Esta acción no se puede deshacer."
                 
                 st.markdown(f"""
-                    <div class="modal-overlay">
-                        <div class="modal-card">
-                            <h2 style="color:#8a6d3b; font-family:'Playfair Display', serif; margin-bottom:10px;">{title}</h2>
-                            <p style="color:#1a140f; margin-bottom:25px;">{body}</p>
-                        </div>
+                    <div style="background: #faf5ed; padding: 40px; border-radius: 20px; border: 2px solid #c9a96e; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-bottom: 20px;">
+                        <h2 style="color:#8a6d3b; font-family:'Playfair Display', serif; margin-bottom:10px;">{title}</h2>
+                        <p style="color:#1a140f; margin-bottom:10px; font-size: 1.1rem;">{body}</p>
                     </div>
                 """, unsafe_allow_html=True)
                 
